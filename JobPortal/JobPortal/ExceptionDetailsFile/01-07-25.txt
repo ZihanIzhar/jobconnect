@@ -1,0 +1,24 @@
+-----------Exception Details on  1/7/2025 11:19:07 PM-----------------
+-------------------------------------------------------------------------------------
+
+
+
+Log Written Date: 1/7/2025 11:19:07 PM
+
+Error Line No : line 90
+
+Error Message: NullReferenceException
+
+Exception Type: System.NullReferenceException
+
+Error Location : Object reference not set to an instance of an object.
+
+ Error Page Url: https://localhost:44377/Home/Login
+
+User Host IP: 
+
+
+--------------------------------*End*------------------------------------------
+
+
+

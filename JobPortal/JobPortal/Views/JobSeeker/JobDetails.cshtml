@@ -53,6 +53,9 @@
                 </dt>
                 <dd>
                     @Html.DisplayFor(model => model.Location)
+                    <!-- Google Map and Street View -->
+                    <div id="job-map" style="height:300px;width:100%;margin-bottom:10px;border-radius:8px;"></div>
+                    <div id="job-streetview" style="height:300px;width:100%;margin-bottom:10px;border-radius:8px;"></div>
                 </dd>
 
                 <dt>
@@ -129,29 +132,62 @@
         </div>
     </div>
 </div>
+
 <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+<!-- Google Maps JavaScript API (replace YOUR_API_KEY with your real key!) -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBKBzNNzf_N1Wxl0LpklwRyV8qL9ezLW_M"></script>
 <script>
+    function showJobLocationOnMap(address) {
+        var geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ 'address': address }, function (results, status) {
+            if (status === 'OK') {
+                var loc = results[0].geometry.location;
+                // Show Map
+                var map = new google.maps.Map(document.getElementById('job-map'), {
+                    center: loc,
+                    zoom: 16
+                });
+                new google.maps.Marker({
+                    map: map,
+                    position: loc
+                });
+                // Show Street View
+                var panorama = new google.maps.StreetViewPanorama(
+                    document.getElementById('job-streetview'), {
+                        position: loc,
+                        pov: { heading: 165, pitch: 0 }
+                    });
+                map.setStreetView(panorama);
+            } else {
+                document.getElementById('job-map').innerText = 'Location not found';
+                document.getElementById('job-streetview').innerText = 'Street View not available';
+            }
+        });
+    }
+
     $(document).ready(function () {
-            var jobId = @Model.JobID;
-            var url = "/JobSeeker/ViewJob/" + jobId;
+        var jobId = @Model.JobID;
+        var url = "/JobSeeker/ViewJob/" + jobId;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (data) {
+                console.log('Done');
+            }
+        });
+        $("#Save").click(function () {
+            var url = "/JobSeeker/Bookmark/" + jobId;
             $.ajax({
                 url: url,
                 type: 'GET',
-                success: function (data) {
-                    console.log('Done');
+                success: function (data, xhr) {
+                    console.log('Done:');
                 }
+            });
+            window.location.reload();
+        });
 
-            });
-             $("#Save").click(function () {
-            var url = "/JobSeeker/Bookmark/" + jobId;
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    success: function (data, xhr) {
-                        console.log('Done:');
-                    }
-                });
-                 window.location.reload();
-            });
+        // Show Google Map and Street View
+        showJobLocationOnMap("@Model.Location");
     });
 </script>
